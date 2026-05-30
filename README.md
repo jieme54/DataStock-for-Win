@@ -12,7 +12,7 @@ The screenshot above uses anonymized local paths.
 
 Download the latest Windows x64 package from GitHub Releases:
 
-[Download DataStock for Windows x64](https://github.com/jieme54/DataStock-for-Win/releases/latest/download/DataStock-0.1.0-Windows-win-x64.zip)
+[Download DataStock for Windows x64](https://github.com/jieme54/DataStock-for-Win/releases/latest/download/DataStock-0.1.1-Windows-win-x64.zip)
 
 Extract the ZIP file, then run `DataStock.exe`.
 
@@ -69,23 +69,23 @@ publish\win-x64\DataStock.exe
 To package the published app as a ZIP:
 
 ```powershell
-Compress-Archive -Path .\publish\win-x64\* -DestinationPath .\dist\DataStock-0.1.0-Windows-win-x64.zip -Force
+Compress-Archive -Path .\publish\win-x64\* -DestinationPath .\dist\DataStock-0.1.1-Windows-win-x64.zip -Force
 ```
 
 ## Project Layout
 
 ```text
 .
-├── DataStock.Windows.csproj
-├── App.xaml
-├── MainWindow.xaml
-├── Localization/
-├── Models/
-├── Resources/
-├── Services/
-├── ViewModels/
-├── docs/
-└── .github/workflows/
+|-- DataStock.Windows.csproj
+|-- App.xaml
+|-- MainWindow.xaml
+|-- Localization/
+|-- Models/
+|-- Resources/
+|-- Services/
+|-- ViewModels/
+|-- docs/
+`-- .github/workflows/
 ```
 
 Release ZIP files are generated automatically by GitHub Actions.

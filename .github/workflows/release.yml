@@ -30,13 +30,13 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path .\dist | Out-Null
-          Compress-Archive -Path .\publish\win-x64\* -DestinationPath .\dist\DataStock-0.1.0-Windows-win-x64.zip -Force
+          Compress-Archive -Path .\publish\win-x64\* -DestinationPath .\dist\DataStock-0.1.1-Windows-win-x64.zip -Force
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: DataStock-0.1.0-Windows-win-x64
-          path: dist/DataStock-0.1.0-Windows-win-x64.zip
+          name: DataStock-0.1.1-Windows-win-x64
+          path: dist/DataStock-0.1.1-Windows-win-x64.zip
 
       - name: Publish GitHub release
         if: github.ref == 'refs/heads/main'
@@ -44,10 +44,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $tag = "v0.1.0"
-          $asset = "dist/DataStock-0.1.0-Windows-win-x64.zip"
+          $tag = "v0.1.1"
+          $asset = "dist/DataStock-0.1.1-Windows-win-x64.zip"
           if (gh release view $tag 2>$null) {
             gh release upload $tag $asset --clobber
           } else {
-            gh release create $tag $asset --title "DataStock 0.1.0 for Windows" --notes "Initial Windows build."
+            gh release create $tag $asset --title "DataStock 0.1.1 for Windows" --notes "Fixes the Windows application icon."
           }
