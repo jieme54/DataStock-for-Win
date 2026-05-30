@@ -1,0 +1,53 @@
+name: Build and release Windows app
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish Windows x64 app
+        shell: pwsh
+        run: dotnet publish .\DataStock.Windows.csproj -c Release -r win-x64 --self-contained false -o .\publish\win-x64
+
+      - name: Package app
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path .\dist | Out-Null
+          Compress-Archive -Path .\publish\win-x64\* -DestinationPath .\dist\DataStock-0.1.0-Windows-win-x64.zip -Force
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DataStock-0.1.0-Windows-win-x64
+          path: dist/DataStock-0.1.0-Windows-win-x64.zip
+
+      - name: Publish GitHub release
+        if: github.ref == 'refs/heads/main'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "v0.1.0"
+          $asset = "dist/DataStock-0.1.0-Windows-win-x64.zip"
+          if (gh release view $tag 2>$null) {
+            gh release upload $tag $asset --clobber
+          } else {
+            gh release create $tag $asset --title "DataStock 0.1.0 for Windows" --notes "Initial Windows build."
+          }
