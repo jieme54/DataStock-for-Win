@@ -72,6 +72,11 @@ public partial class MainWindow : Window
         ShowInTaskbar = false;
     }
 
+    public void StartInTray()
+    {
+        HideToTray();
+    }
+
     private void ShowFromTray()
     {
         ShowInTaskbar = true;
