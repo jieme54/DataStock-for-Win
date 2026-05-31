@@ -27,6 +27,7 @@ public sealed class DataStore : INotifyPropertyChanged
         Jobs.CollectionChanged += JobsCollectionChanged;
         Logs.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Logs));
         Load();
+        RefreshStartupRegistration();
         Settings.LaunchAtLogin = StartupRegistrationService.IsEnabled();
         InitializeLanguage();
     }
@@ -186,6 +187,17 @@ public sealed class DataStore : INotifyPropertyChanged
             Message = message
         });
         TrimLogs();
+    }
+
+    private void RefreshStartupRegistration()
+    {
+        try
+        {
+            StartupRegistrationService.RefreshEnabledRegistration();
+        }
+        catch
+        {
+        }
     }
 
     public void Save()
