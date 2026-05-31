@@ -6,6 +6,7 @@ public static class StartupRegistrationService
 {
     private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private const string AppName = "DataStock";
+    private const string BackgroundLaunchArgument = "--background";
 
     public static bool IsEnabled()
     {
@@ -26,7 +27,7 @@ public static class StartupRegistrationService
                 throw new InvalidOperationException("Unable to resolve the application path.");
             }
 
-            key.SetValue(AppName, $"\"{executablePath}\"");
+            key.SetValue(AppName, StartupCommand(executablePath));
         }
         else
         {
@@ -34,8 +35,39 @@ public static class StartupRegistrationService
         }
     }
 
+    public static bool IsBackgroundLaunch(IEnumerable<string> args)
+    {
+        return args.Any(arg => arg.Equals(BackgroundLaunchArgument, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public static void RefreshEnabledRegistration()
+    {
+        using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: true);
+        if (key?.GetValue(AppName) is not string value || string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        var executablePath = Environment.ProcessPath ?? "";
+        if (string.IsNullOrWhiteSpace(executablePath))
+        {
+            return;
+        }
+
+        var expectedValue = StartupCommand(executablePath);
+        if (!value.Equals(expectedValue, StringComparison.Ordinal))
+        {
+            key.SetValue(AppName, expectedValue);
+        }
+    }
+
     public static string StatusText()
     {
         return IsEnabled() ? L10n.Text("StartupEnabled") : L10n.Text("StartupDisabled");
+    }
+
+    private static string StartupCommand(string executablePath)
+    {
+        return $"\"{executablePath}\" {BackgroundLaunchArgument}";
     }
 }
