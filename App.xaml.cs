@@ -1,4 +1,5 @@
 using System.Threading;
+using DataStock.Windows.Services;
 
 namespace DataStock.Windows;
 
@@ -14,10 +15,16 @@ public partial class App : System.Windows.Application
 
     protected override void OnStartup(System.Windows.StartupEventArgs e)
     {
+        var isBackgroundLaunch = StartupRegistrationService.IsBackgroundLaunch(e.Args);
+
         singleInstanceMutex = new Mutex(initiallyOwned: true, MutexName, out var isFirstInstance);
         if (!isFirstInstance)
         {
-            SignalExistingInstance();
+            if (!isBackgroundLaunch)
+            {
+                SignalExistingInstance();
+            }
+
             singleInstanceMutex.Dispose();
             singleInstanceMutex = null;
             Environment.Exit(0);
@@ -36,7 +43,14 @@ public partial class App : System.Windows.Application
 
         var mainWindow = new MainWindow();
         MainWindow = mainWindow;
-        mainWindow.Show();
+        if (isBackgroundLaunch)
+        {
+            mainWindow.StartInTray();
+        }
+        else
+        {
+            mainWindow.Show();
+        }
     }
 
     protected override void OnExit(System.Windows.ExitEventArgs e)
